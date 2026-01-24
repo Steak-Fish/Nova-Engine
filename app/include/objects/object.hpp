@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utility/types.hpp"
 #include "objects/object_ref.hpp"
 #include "utility/hash.hpp"
 
@@ -31,6 +30,7 @@ struct TransformComponent {
 };
 
 class Object;
+struct RenderData;
 
 typedef std::vector<std::shared_ptr<Object>> ObjectList;
 
@@ -43,7 +43,7 @@ public:
 	 * @brief Update logic, called once per frame.
 	 * @param deltaTime Time elapsed since last frame in seconds.
 	 */
-	virtual void update(float deltaTime);
+	virtual void update(double deltaTime);
 
 	/**
 	 * @brief Gets the static identifier for the type of object
@@ -59,7 +59,7 @@ public:
 
 	/**
 	 * @brief Render logic, called once per frame.
-	 * Note that you cannot define this function in script.
+	 * Note that this is only callable internally
 	 * @param renderData Secret struct containing rendering context data.
 	 */
 	virtual void render(RenderData& renderData);

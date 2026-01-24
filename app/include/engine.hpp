@@ -1,31 +1,20 @@
-#ifndef ENGINE_HPP
-#define ENGINE_HPP
+#pragma once
 
-// Forward facing
-
-#include "core/graphics.hpp"
-#include "utility/resources.hpp"
+#include "graphics/graphics.hpp"
 
 #include <vector>
 #include <memory>
 
 #include "objects/object.hpp"
 
-#define MAX_FRAME_TIME 1.f
-
 namespace Nova {
 
 class Engine {
 public:
-    Engine() = default;
+    Engine(const EngineConfig& engineConfig);
     ~Engine();
 
-    void init();
-
-    void loop(const std::function<void(float)>& gameLogic);
-
-    void setSettings(const Settings& settings);
-    Resources& getResources();
+    void loop(const std::function<void(double)>& gameLogic);
 
     ObjectRef<Object> getRoot();
 
@@ -34,12 +23,8 @@ public:
     Engine& operator=(const Engine&) = delete;
 
 private:
-    std::shared_ptr<Object> root; // Root object for the scene graph
-    Settings settings;
-    Resources resources;
-    Graphics graphics{settings, resources};
+    std::shared_ptr<Object> root;
+    Graphics graphics;
 };
 
-} // namespace Nova
-
-#endif // ENGINE_HPP
+}

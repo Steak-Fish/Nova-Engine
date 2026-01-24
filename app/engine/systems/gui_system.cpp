@@ -1,10 +1,15 @@
 #include "gui_system.hpp"
-#include "utility/resources.hpp"
 
-#include "descriptors.hpp"
-#include "core/graphics.hpp"
-#include "renderer.hpp"
-#include "swap_chain.hpp"
+#include <iostream>
+#include <stdexcept>
+
+#include "graphics/vulkan/descriptors.hpp"
+#include "graphics/graphics.hpp"
+#include "graphics/window.hpp"
+#include "graphics/vulkan/device.hpp"
+#include "graphics/vulkan/renderer.hpp"
+#include "graphics/window.hpp"
+#include "graphics/vulkan/swap_chain.hpp"
 #include "imgui.h"
 #include "imgui_impl_vulkan.h"
 #include "imgui_impl_glfw.h"
@@ -23,12 +28,8 @@ namespace ImGui {
 
 namespace Nova {
 
-GUI_System::GUI_System(Graphics& graphics)
-    : renderer(graphics.getRenderer()), device(renderer.getDevice()), imguiPool(graphics.imguiPool) {
-
-    Window& window = renderer.getWindow();
-
-    // Create descriptor pool for ImGui
+void GUI_System::init() {
+    // --- Descriptor Pool for ImGui ---
     VkDescriptorPoolSize poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
@@ -43,74 +44,58 @@ GUI_System::GUI_System(Graphics& graphics)
         { VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
     };
 
-    VkDescriptorPoolCreateInfo poolInfo = {};
+    VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
     poolInfo.maxSets = 1000;
     poolInfo.poolSizeCount = static_cast<uint32_t>(std::size(poolSizes));
     poolInfo.pPoolSizes = poolSizes;
 
-    if (vkCreateDescriptorPool(device.device(), &poolInfo, nullptr, &imguiPool) != VK_SUCCESS) {
+    if (vkCreateDescriptorPool(device->device(), &poolInfo, nullptr, &imguiPool) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create ImGui descriptor pool!");
     }
 
-    // Initialize ImGui
+    // --- Create ImGui context ---
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    // --- Platform/Renderer backends ---
+    ImGui_ImplGlfw_InitForVulkan(window->getWindow(), true);
 
-    // Platform/Renderer bindings
-    ImGui_ImplGlfw_InitForVulkan(window.getWindow(), true);
-    ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance = device.getInstance();
-    init_info.PhysicalDevice = device.getPhysicalDevice();
-    init_info.Device = device.device();
-    init_info.QueueFamily = device.findPhysicalQueueFamilies().graphicsFamily;
-    init_info.Queue = device.graphicsQueue();
+    ImGui_ImplVulkan_InitInfo init_info{};
+    init_info.Instance       = device->getInstance();
+    init_info.PhysicalDevice = device->getPhysicalDevice();
+    init_info.Device         = device->device();
+    init_info.QueueFamily    = device->findPhysicalQueueFamilies().graphicsFamily;
+    init_info.Queue          = device->graphicsQueue();
+    init_info.PipelineCache  = VK_NULL_HANDLE;
     init_info.DescriptorPool = imguiPool;
-    init_info.MinImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
-    init_info.ImageCount = SwapChain::MAX_FRAMES_IN_FLIGHT;
-    init_info.RenderPass = renderer.getSwapChainRenderPass();
+    init_info.MinImageCount  = SwapChain::MAX_FRAMES_IN_FLIGHT;
+    init_info.ImageCount     = SwapChain::MAX_FRAMES_IN_FLIGHT;
+    init_info.Allocator      = nullptr;
+    init_info.CheckVkResultFn = [](VkResult err) {
+        if (err != VK_SUCCESS)
+            std::cerr << "[ImGui][Vulkan] VkResult = " << err << std::endl;
+    };
 
+    // --- Latest Vulkan backend: pipeline info ---
+    init_info.PipelineInfoMain.RenderPass  = renderer->getSwapChainRenderPass();
+    init_info.PipelineInfoMain.Subpass     = 0;
+    init_info.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+
+    // --- Initialize Vulkan backend ---
     ImGui_ImplVulkan_Init(&init_info);
 
-    // Upload Fonts
-    VkCommandBufferAllocateInfo allocInfo = {};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = device.getCommandPool();
-    allocInfo.commandBufferCount = 1;
+    // --- Font upload section is NOT needed for default font ---
+    // ImGui will automatically upload the default font on the first frame.
 
-    VkCommandBuffer command_buffer;
-    vkAllocateCommandBuffers(device.device(), &allocInfo, &command_buffer);
-
-    VkCommandBufferBeginInfo beginInfo = {};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(command_buffer, &beginInfo);
-
-    ImGui_ImplVulkan_CreateFontsTexture();
-
-    vkEndCommandBuffer(command_buffer);
-
-    VkSubmitInfo submitInfo = {};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &command_buffer;
-
-    vkQueueSubmit(device.graphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(device.graphicsQueue());
-
-    vkFreeCommandBuffers(device.device(), device.getCommandPool(), 1, &command_buffer);
-
-    ImGui_ImplVulkan_DestroyFontsTexture();
+    std::cout << "Finished ImGui system init (latest backend, no manual font upload)." << std::endl;
 }
 
-void GUI_System::update(float) {
+void GUI_System::update(double /*deltaTime*/) {
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -122,9 +107,18 @@ void GUI_System::update(float) {
                         // Edit 2: Yeah, I'm over her now (I've got someone else in my sights)
                         // Edit 3: I miss Emmy :(, and it's complicated with the other girl
                         //         I don't think she likes me ngl
+                        // Edit 4: It's actually WILD that I added this here
+                        //         I've been working on this for nearly 2 years now
+                        //         I'm comfortable.
 
         // The variable naming is so cursed, but I'm not changing it
+        // This is lowkey some of the best code I've written 
+        // I used VERY little AI on this one lmao
     }
+
+    ImGui::Begin("DummyWindow", nullptr);
+    ImGui::Text("Some Text?!?!");
+    ImGui::End();
 }
 
 void GUI_System::render(RenderData& renderData) {
@@ -144,7 +138,7 @@ GUI_System::~GUI_System() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    vkDestroyDescriptorPool(device.device(), imguiPool, nullptr);
+    vkDestroyDescriptorPool(device->device(), imguiPool, nullptr);
 }
 
 /*

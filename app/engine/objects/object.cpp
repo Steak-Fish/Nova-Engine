@@ -63,7 +63,7 @@ glm::mat3 TransformComponent::normalMatrix() {
         }};
 }
 
-void Object::update(float /*deltaTime*/) {};
+void Object::update(double /*deltaTime*/) {}
 
 void Object::render(RenderData& /*renderData*/) {}
 

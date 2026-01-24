@@ -1,7 +1,4 @@
-#ifndef GUI_SYSTEM_HPP
-#define GUI_SYSTEM_HPP
-
-#include "utility/types.hpp"
+#pragma once
 
 #include <any>
 #include <map>
@@ -9,36 +6,28 @@
 #include <string>
 #include <functional>
 
-#include "core/graphics.hpp"
-#include "device.hpp"
+#include "graphics/graphics.hpp"
+#include "graphics/vulkan/device.hpp"
+#include "graphics/graphics.hpp"
+#include "graphics/window.hpp"
+#include "systems/system.hpp"
 
 struct VkDescriptorPool_T;
 typedef VkDescriptorPool_T *VkDescriptorPool;
 
 namespace Nova {
 
-class GUI_System : public Object {
+class GUI_System : public System {
 public:
-    GUI_System(Graphics& graphics);
+    using System::System; // inherit System's constructors
+    GUI_System(const GUI_System&) = delete;
+    GUI_System &operator=(const GUI_System&) = delete;
+
     ~GUI_System();
 
-    GUI_System(const GUI_System &) = delete;
-    GUI_System &operator=(const GUI_System &) = delete;
-
-    void update(float deltaTime) override;
+    void init() override;
+    void update(double dT) override;
     void render(RenderData& renderData) override;
-
-    /**
-	 * @brief Gets the static identifier for the type of object
-	 * @return const char*, 0 if generic.
-	 */
-	static const char* getStaticObjectType() { return "GUI System"; }
-
-	/**
-	 * @brief Gets the identifier for the type of object
-	 * @return const char*, 0 if generic.
-	 */
-  	const char* getObjectType() const override { return getStaticObjectType(); }
 
     /**
      * @brief Get a pointer to a binding
@@ -62,7 +51,8 @@ public:
     template<typename T>
     T getBindingValue(const std::string& name) {
         auto it = getBindingPointer<T>(name);
-        return std::any_cast<T>(*it);
+        return *it;
+        //return std::any_cast<T>(*it); 
     }
 
     std::any* setBinding(const std::string& name, std::any value = false);
@@ -70,14 +60,9 @@ public:
     bool checkBinding(const std::string& name);
     void registerWindow(std::function<void(GUI_System&)> func);
 private:
-    Renderer& renderer;
-    Device& device;
-    VkDescriptorPool& imguiPool;
-
+    VkDescriptorPool imguiPool;
     std::vector<std::function<void(GUI_System&)>> windows;
     std::map<std::string, std::any> bindings;
 };
 
-} // namespace Nova
-
-#endif // GUI_SYSTEM_HPP
+}
