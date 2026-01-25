@@ -43,10 +43,10 @@ jobs:
           ninja-build
 
     - name: Create build directory
-      run: mkdir -p ./build
+      run: mkdir -p ./build ./bin
 
     - name: Configure CMake project
-      run: cmake -S ./app -B ./build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+      run: cmake -S . -B ./build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
 
     - name: Build project with Ninja
       run: cmake --build ./build -- -j$(nproc)
@@ -56,6 +56,6 @@ jobs:
       with:
         name: nova-engine-${{ runner.os }}-${{ matrix.build_type }}
         path: |
-          ./build/app/libnova-engine.so
-          ./build/app/libimgui.a
+          ./build/libnova-engine.so
+          ./build/libimgui.a
           ./bin/demo_game
