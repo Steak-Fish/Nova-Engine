@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04] #, windows-latest
-        build_type: [Release]
+        build_type: [Release, RelWithDebInfo, Debug]
 
     steps:
     - uses: actions/checkout@v4
@@ -54,5 +54,8 @@ jobs:
     - name: Upload build artifact
       uses: actions/upload-artifact@v4
       with:
-        name: build
-        path: ./build/app/libnova_engine.so
+        name: nova-engine-${{ runner.os }}-${{ matrix.build_type }}
+        path: |
+          ./build/app/libnova-engine.so
+          ./build/app/libimgui.a
+          ./bin/demo_game
