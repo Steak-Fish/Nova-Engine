@@ -28,7 +28,7 @@ ObjectRef<Object> Engine::getRoot() {
     return ObjectRef<Object>(root);
 }
 
-void Engine::loop(const std::function<void(double)>& gameLogic) {
+void Engine::loop(GameLogicFn gameLogic) {
     const FrameCtx* ctx = {};
 
     do {

@@ -4,12 +4,15 @@
 #include <thread>
 #include <chrono>
 
+void gameLogic(double /*dT*/) {
+    // update game state
+}
+
 int main(void) {
     Nova::EngineConfig config;
     Nova::Engine engine(config);
 
-    engine.loop([&](double dT) {
-    });
+    engine.loop(gameLogic);
 
     return 0;
 }

@@ -13,8 +13,8 @@ class Engine {
 public:
     Engine(const EngineConfig& engineConfig);
     ~Engine();
-
-    void loop(const std::function<void(double)>& gameLogic);
+    using GameLogicFn = void(*)(double);
+    void loop(GameLogicFn gameLogic);
 
     ObjectRef<Object> getRoot();
 
