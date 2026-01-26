@@ -22,6 +22,7 @@ public:
 
     std::string title = "Untitled Application | Nova Engine 2";
 
+    void* userData;
 
     /**
      * Engine Config

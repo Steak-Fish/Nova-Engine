@@ -9,6 +9,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../bin)
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 
+# -------------------------
+# ImGui (internal static lib)
+# -------------------------
 set(IMGUI_SRC
     libs/imgui/imgui.cpp
     libs/imgui/imgui_draw.cpp
@@ -21,13 +24,21 @@ set(IMGUI_SRC
 
 add_library(imgui STATIC ${IMGUI_SRC})
 
-target_include_directories(imgui PUBLIC
-    libs/imgui
-    libs/imgui/backends
+# Core ImGui headers are PUBLIC
+# Backend headers are PRIVATE (build-only)
+target_include_directories(imgui
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui>
+        $<INSTALL_INTERFACE:include/nova-engine/imgui>
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui/backends
 )
 
-target_compile_options(imgui PRIVATE -fPIC)
+target_compile_options(imgui PRIVATE -fPIC -Wall -Wextra)
 
+# -------------------------
+# Nova Engine library
+# -------------------------
 set(ENGINE_SOURCE_FILES
     engine/systems/system.cpp
     engine/systems/gui_system.cpp
@@ -41,11 +52,9 @@ set(ENGINE_SOURCE_FILES
     engine/graphics/vulkan/buffer.cpp
     engine/graphics/graphics.cpp
     engine/graphics/window.cpp
-    
-    engine/objects/object.cpp
-    
-    engine/utility/config.cpp
 
+    engine/objects/object.cpp
+    engine/utility/config.cpp
     engine/engine.cpp
 )
 
@@ -58,6 +67,7 @@ target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/libs
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/imgui/backends
         ${Vulkan_INCLUDE_DIRS}
 )
 
@@ -71,11 +81,26 @@ target_link_libraries(${PROJECT_NAME}
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
 
-# Install rules
-
+# -------------------------
+# Install headers
+# -------------------------
+# Engine public headers
 install(DIRECTORY include/ DESTINATION include/nova-engine)
 
-install(TARGETS ${PROJECT_NAME}
+install(FILES
+    libs/imgui/imgui.h
+    libs/imgui/imconfig.h
+    libs/imgui/imgui_internal.h
+    libs/imgui/imstb_rectpack.h
+    libs/imgui/imstb_textedit.h
+    libs/imgui/imstb_truetype.h
+    DESTINATION include/nova-engine/
+)
+
+# -------------------------
+# Install libraries + export
+# -------------------------
+install(TARGETS ${PROJECT_NAME} imgui
     EXPORT nova-engine-targets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
@@ -83,16 +108,17 @@ install(TARGETS ${PROJECT_NAME}
     INCLUDES DESTINATION include/nova-engine
 )
 
-# Export CMake package
 install(EXPORT nova-engine-targets
     FILE nova-engine-targets.cmake
     NAMESPACE nova-engine::
     DESTINATION lib/cmake/nova-engine
 )
 
+# -------------------------
+# Package configuration
+# -------------------------
 include(CMakePackageConfigHelpers)
 
-# Generate version file
 write_basic_package_version_file(
     "${CMAKE_CURRENT_BINARY_DIR}/nova-engine-configVersion.cmake"
     VERSION ${PROJECT_VERSION}
@@ -100,14 +126,13 @@ write_basic_package_version_file(
 )
 
 configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/nova-engine-config.cmake.in" # input template
-    "${CMAKE_CURRENT_BINARY_DIR}/nova-engine-config.cmake"            # output
-    INSTALL_DESTINATION "lib/cmake/nova-engine"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/nova-engine-config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/nova-engine-config.cmake"
+    INSTALL_DESTINATION lib/cmake/nova-engine
     NO_SET_AND_CHECK_MACRO
     NO_CHECK_REQUIRED_COMPONENTS_MACRO
 )
 
-# Install package config files
 install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/nova-engine-config.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/nova-engine-configVersion.cmake"

@@ -13,7 +13,7 @@ class Engine {
 public:
     Engine(const EngineConfig& engineConfig);
     ~Engine();
-    using GameLogicFn = void(*)(double);
+    using GameLogicFn = void(*)(const FrameCtx&, void* userData);
     void loop(GameLogicFn gameLogic);
 
     ObjectRef<Object> getRoot();
@@ -25,6 +25,7 @@ public:
 private:
     std::shared_ptr<Object> root;
     Graphics graphics;
+    void* userData;
 };
 
 }

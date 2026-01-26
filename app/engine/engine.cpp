@@ -15,6 +15,7 @@ Engine::Engine(const EngineConfig& c)
     : root(std::make_shared<Object>()), graphics(c, getRoot()) {
 
     std::cout << "Engine initalized!!!!" << std::endl;
+    userData = c.userData;
 
 }
 
@@ -38,7 +39,7 @@ void Engine::loop(GameLogicFn gameLogic) {
             obj->update(ctx->deltaTime);
         }
         
-        gameLogic(ctx->deltaTime);
+        gameLogic(*ctx, userData);
         
         graphics.endFrame();
     } while (ctx->running);
