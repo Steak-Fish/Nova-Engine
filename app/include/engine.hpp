@@ -20,6 +20,9 @@ public:
 
     ObjectRef<Object> getRoot();
 
+    template<typename T>
+    void addSystem();
+
     // Prevent copying
     Engine(const Engine&) = delete;
     Engine& operator=(const Engine&) = delete;

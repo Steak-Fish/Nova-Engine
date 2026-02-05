@@ -18,15 +18,16 @@ Graphics::Graphics(const EngineConfig& c, ObjectRef<Object> rootRef) {
     device   = std::make_unique<Device>(*window, c);
     renderer = std::make_unique<Renderer>(*window, *device);
 
-    auto root = rootRef.lock();
-    auto GUI = std::make_shared<GUI_System>(*window, *device, *renderer);
-    GUI->init(); // Temporary work around
-    addSystem(GUI);
+    addSystem<GUI_System>();
 }
 
 Graphics::~Graphics() = default;
 
-void Graphics::addSystem(std::shared_ptr<System> system) {
+template<typename T>
+void Graphics::addSystem() {
+    static_assert(std::is_base_of<System, T>::value, "T must derive from System");
+    auto system = std::make_shared<T>(*window, *device, *renderer);
+    system->init();
     systems.push_back(system);
 }
 

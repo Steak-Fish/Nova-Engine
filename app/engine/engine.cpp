@@ -33,6 +33,11 @@ ObjectRef<Object> Engine::getRoot() {
     return ObjectRef<Object>(root);
 }
 
+template<typename T>
+void Engine::addSystem() {
+    graphics.addSystem<T>();
+}
+
 void Engine::loop(GameLogicFn gameLogic) {
     const FrameCtx* ctx = {};
 

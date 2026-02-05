@@ -30,7 +30,8 @@ public:
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
     
-    void addSystem(std::shared_ptr<System> system);
+    template<typename T>
+    void addSystem();
 
     void waitDeviceIdle();
 
