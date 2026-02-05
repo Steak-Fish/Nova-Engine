@@ -9,6 +9,8 @@
 
 namespace Nova {
 
+class ModuleManager;
+
 class Engine {
 public:
     Engine(const EngineConfig& engineConfig);
@@ -25,6 +27,7 @@ public:
 private:
     std::shared_ptr<Object> root;
     Graphics graphics;
+    ModuleManager* moduleManager;
     void* userData;
 };
 

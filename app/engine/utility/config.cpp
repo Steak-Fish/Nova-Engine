@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <iterator>
+#include <vector>
 #include <filesystem>
 namespace fs = std::filesystem;
 
@@ -48,6 +49,50 @@ EngineConfig::EngineConfig() {
 
 const std::string& EngineConfig::getExecPath() const {
     return executablePath;
+}
+
+std::vector<std::string> searchDirectory(const std::string& directory) {
+    std::vector<std::string> files;
+
+    // Check if the given directory exists and is a directory
+    if (!fs::exists(directory) || !fs::is_directory(directory)) {
+        return files; // Return empty vector if directory is invalid
+    }
+
+    // Iterate through the directory
+    for (const auto& entry : fs::directory_iterator(directory)) {
+        if (fs::is_directory(entry.path())) {
+            // If the entry is a directory, recurse into it
+            std::vector<std::string> subDirFiles = searchDirectory(entry.path().string());
+            // Append the files found in the subdirectory to the main list
+            files.insert(files.end(), subDirFiles.begin(), subDirFiles.end());
+        } else if (fs::is_regular_file(entry.path())) {
+            // If the entry is a file, add it to the list
+            files.push_back(entry.path().string());
+        }
+    }
+
+    return files;
+}
+
+std::vector<std::string> EngineConfig::getModulePaths() {
+    std::vector<std::string> modulePaths;
+    std::string modulesDir = executablePath + "/modules";
+
+    if(debug) std::cout << "\nSearching for modules in: " << modulesDir << std::endl;
+
+    for (const auto& path : searchDirectory(modulesDir)) {
+        std::string ext;
+        size_t dotPos = path.find_last_of(".") + 1;
+        ext = (dotPos != 0) ? path.substr(dotPos) : "";
+        if (ext == "dll" || ext == "so" || ext == "dylib") {
+            modulePaths.push_back(path);
+            if (debug) std::cout << " - Module found: " << path << std::endl;
+        }
+    }
+
+    if (debug) std::cout << std::endl;
+    return modulePaths;
 }
 
 }

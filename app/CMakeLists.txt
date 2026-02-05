@@ -54,7 +54,11 @@ set(ENGINE_SOURCE_FILES
     engine/graphics/window.cpp
 
     engine/objects/object.cpp
+
     engine/utility/config.cpp
+
+    engine/modules/module_manager.cpp
+
     engine/engine.cpp
 )
 

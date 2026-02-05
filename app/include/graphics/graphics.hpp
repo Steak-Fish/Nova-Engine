@@ -6,6 +6,7 @@
 
 #include "objects/object.hpp"
 #include "utility/config.hpp"
+#include "systems/system.hpp"
 
 #define MAX_FRAME_TIME 1.0
 
@@ -14,7 +15,6 @@ namespace Nova {
 class Window;
 class Device;
 class Renderer;
-class System;
 
 struct FrameCtx {
     uint64_t frameCount = 0;

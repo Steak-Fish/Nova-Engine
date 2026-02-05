@@ -16,6 +16,7 @@ add_executable(demo_game main.cpp ${GAME_SOURCES})
 
 
 target_include_directories(demo_game PRIVATE ../app/include)
+target_include_directories(demo_game PRIVATE ../app/libs)
 target_link_libraries(demo_game PRIVATE nova-engine)
 
 target_compile_options(demo_game PRIVATE -Wall -Wextra)

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 namespace Nova {
 
@@ -20,7 +21,7 @@ public:
     uint32_t appMinorVer = 0;
     uint32_t appPatchVer = 0;
 
-    std::string title = "Untitled Application | Nova Engine 2";
+    std::string title = "Untitled Application | Nova Engine";
 
     void* userData;
 
@@ -29,16 +30,19 @@ public:
      */
 
     // Version: Major.Minor.Patch
-    const uint32_t EngMajorVer = 0;
-    const uint32_t EngMinorVer = 0;
-    const uint32_t EngPatchVer = 0;
+    const uint32_t EngMajorVer = 5;
+    const uint32_t EngMinorVer = 1;
+    const uint32_t EngPatchVer = 1;
 
-    const char* engineName = "Nova Engine 2\0"; // Do NOT forget to null terminate
+    const char* engineName = "Nova Engine\0"; // Do NOT forget to null terminate
 
     bool     forceGPU = false;
     uint32_t forceGPUID;
 
+    const bool debug = true;
+
     const std::string& getExecPath() const;
+    std::vector<std::string> getModulePaths();
 
 #ifndef NDEBUG
     bool enableValidationLayers = true;

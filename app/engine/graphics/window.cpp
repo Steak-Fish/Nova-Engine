@@ -16,7 +16,6 @@ Window::Window(const EngineConfig& c) {
     state.height = c.height;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     window = glfwCreateWindow(c.width, c.height, c.title.c_str(), nullptr, nullptr);
     if (!window) {
@@ -58,7 +57,7 @@ void Window::createWindowSurface(VkInstance instance, VkSurfaceKHR *surface) {
 }
 
 VkExtent2D Window::getExtent() {
-    return VkExtent2D(state.width, state.height);
+    return VkExtent2D{state.width, state.height};
 }
 
 bool Window::wasWindowResized() const {

@@ -29,7 +29,6 @@ namespace ImGui {
 namespace Nova {
 
 void GUI_System::init() {
-    // --- Descriptor Pool for ImGui ---
     VkDescriptorPoolSize poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
@@ -55,14 +54,12 @@ void GUI_System::init() {
         throw std::runtime_error("Failed to create ImGui descriptor pool!");
     }
 
-    // --- Create ImGui context ---
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
-    // --- Platform/Renderer backends ---
     ImGui_ImplGlfw_InitForVulkan(window->getWindow(), true);
 
     ImGui_ImplVulkan_InitInfo init_info{};
@@ -81,18 +78,13 @@ void GUI_System::init() {
             std::cerr << "[ImGui][Vulkan] VkResult = " << err << std::endl;
     };
 
-    // --- Latest Vulkan backend: pipeline info ---
     init_info.PipelineInfoMain.RenderPass  = renderer->getSwapChainRenderPass();
     init_info.PipelineInfoMain.Subpass     = 0;
     init_info.PipelineInfoMain.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
 
-    // --- Initialize Vulkan backend ---
     ImGui_ImplVulkan_Init(&init_info);
 
-    // --- Font upload section is NOT needed for default font ---
-    // ImGui will automatically upload the default font on the first frame.
-
-    std::cout << "Finished ImGui system init (latest backend, no manual font upload)." << std::endl;
+    std::cout << "Finished ImGui system init" << std::endl;
 }
 
 void GUI_System::update(double /*deltaTime*/) {
@@ -115,10 +107,6 @@ void GUI_System::update(double /*deltaTime*/) {
         // This is lowkey some of the best code I've written 
         // I used VERY little AI on this one lmao
     }
-
-    ImGui::Begin("DummyWindow", nullptr);
-    ImGui::Text("Some Text?!?!");
-    ImGui::End();
 }
 
 void GUI_System::render(RenderData& renderData) {
@@ -171,4 +159,4 @@ void GUI_System::registerWindow(std::function<void(GUI_System&)> func) {
     windows.push_back(func);
 }
 
-} // namespace Nova
+}

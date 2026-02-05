@@ -1,5 +1,4 @@
-#ifndef ROLLING_BUFFER_HPP
-#define ROLLING_BUFFER_HPP
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -77,5 +76,3 @@ std::vector<T> RollingBuffer::getOrderedArray() const {
     }
     return result;
 }
-
-#endif // ROLLING_BUFFER_HPP

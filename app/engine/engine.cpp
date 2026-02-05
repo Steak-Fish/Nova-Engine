@@ -8,11 +8,14 @@
 #include "imgui_impl_glfw.h"
 
 #include "systems/gui_system.hpp"
+#include "modules/module_manager.hpp"
 
 namespace Nova {
 
 Engine::Engine(const EngineConfig& c)
     : root(std::make_shared<Object>()), graphics(c, getRoot()) {
+
+    moduleManager = new ModuleManager(const_cast<EngineConfig&>(c));
 
     std::cout << "Engine initalized!!!!" << std::endl;
     userData = c.userData;
@@ -22,6 +25,7 @@ Engine::Engine(const EngineConfig& c)
 Engine::~Engine() {
 
     graphics.waitDeviceIdle();
+    delete moduleManager;
     root.reset(); // Automatically clears children too
 }
 
