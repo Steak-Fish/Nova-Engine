@@ -15,13 +15,16 @@ class Engine {
 public:
     Engine(const EngineConfig& engineConfig);
     ~Engine();
-    using GameLogicFn = void(*)(const FrameCtx&, void* userData);
-    void loop(GameLogicFn gameLogic);
 
     ObjectRef<Object> getRoot();
 
     template<typename T>
-    void addSystem();
+    void addSystem() {
+        graphics.addSystem<T>();
+    }
+
+    using GameLogicFn = void(*)(const FrameCtx&, void* userData);
+    void loop(GameLogicFn gameLogic);
 
     // Prevent copying
     Engine(const Engine&) = delete;

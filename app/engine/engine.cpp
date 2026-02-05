@@ -13,7 +13,7 @@
 namespace Nova {
 
 Engine::Engine(const EngineConfig& c)
-    : root(std::make_shared<Object>()), graphics(c, getRoot()) {
+    : root(std::make_shared<Object>()), graphics(c) {
 
     moduleManager = new ModuleManager(const_cast<EngineConfig&>(c));
 
@@ -31,11 +31,6 @@ Engine::~Engine() {
 
 ObjectRef<Object> Engine::getRoot() {
     return ObjectRef<Object>(root);
-}
-
-template<typename T>
-void Engine::addSystem() {
-    graphics.addSystem<T>();
 }
 
 void Engine::loop(GameLogicFn gameLogic) {

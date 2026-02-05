@@ -24,14 +24,19 @@ struct FrameCtx {
 
 class Graphics {
 public:
-    Graphics(const EngineConfig& engineConfig, ObjectRef<Object> rootRef);
+    Graphics(const EngineConfig& engineConfig);
     ~Graphics();
 
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
     
     template<typename T>
-    void addSystem();
+    void addSystem() {
+        static_assert(std::is_base_of<System, T>::value, "T must derive from System");
+        auto system = std::make_shared<T>(*window, *device, *renderer);
+        system->init();
+        systems.push_back(system);
+    }
 
     void waitDeviceIdle();
 

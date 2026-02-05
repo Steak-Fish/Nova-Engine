@@ -13,7 +13,7 @@
 
 namespace Nova {
 
-Graphics::Graphics(const EngineConfig& c, ObjectRef<Object> rootRef) {
+Graphics::Graphics(const EngineConfig& c) {
     window   = std::make_unique<Window>(c);
     device   = std::make_unique<Device>(*window, c);
     renderer = std::make_unique<Renderer>(*window, *device);
@@ -23,6 +23,7 @@ Graphics::Graphics(const EngineConfig& c, ObjectRef<Object> rootRef) {
 
 Graphics::~Graphics() = default;
 
+/*
 template<typename T>
 void Graphics::addSystem() {
     static_assert(std::is_base_of<System, T>::value, "T must derive from System");
@@ -30,6 +31,7 @@ void Graphics::addSystem() {
     system->init();
     systems.push_back(system);
 }
+*/
 
 void Graphics::waitDeviceIdle() {
     vkDeviceWaitIdle(device->device());
