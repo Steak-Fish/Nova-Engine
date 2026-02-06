@@ -1,8 +1,5 @@
 # Nova Engine
 
-## NOTE: This is still in development.
-There is extremely limited functionality and lacks any ability to develop a playable game.
-
 ## Overview
 
 Nova Engine is the key component in a project called Ignis, Ingis is a game distrobution platform similar to roblox, while Nova Engine is the game engine behind Ingnis.
@@ -23,9 +20,9 @@ Nova Engine is a powerful and modern game development framework built with Vulka
 ### Prerequisites
 
 Before you begin, ensure you have met the following requirements:
-- Operating System: Linux
-- [Vulkan SDK](https://vulkan.lunarg.com/sdk/home) installed
-- [GLM](https://github.com/g-truc/glm) installed
+- Operating System: Linux (Windows support is coming)
+- [Vulkan SDK](https://vulkan.lunarg.com/sdk/home)
+- [GLM](https://github.com/g-truc/glm)
 - glslc
 - C++ Compiler (Ideally GCC)
 - CMake
@@ -49,12 +46,11 @@ sudo apt install cmake build-essential libvulkan-dev vulkan-tools libglfw3 libgl
    git submodule update --init --recursive
    ```
 
-3. **Build the Project**
+3. **Build and install the Project**
    ```bash
-   ./resources.sh
    mkdir -p build && cd build
    cmake -G Ninja ../app
-   cmake --build .
+   sudo ninja install
    ```
 
 ### Using Nova Engine in Your Project
@@ -63,22 +59,16 @@ To use Nova Engine in your project, follow these steps:
 
 1. **Include the Engine Header**
    ```cpp
-   #include "nova/engine.hpp"
+   #include "nova-engine/engine.hpp"
    ```
 
-2. **Write your project**
- 
-   TODO: Finish this, and link it to the wiki.
-
-4. **Run Your Game**
-   Compile and run your game as usual. Nova Engine will handle the rest.
-
-### Directory Structure
-
-- **src/engine/**: Source code for the engine.
-- **src/resources/**: Place your game assets (textures, models, sounds, etc.) here for automatic loading.
-- **src/game/**: Where your game's code is defined.
-- **build/**: Directory where the build output will be generated.
+2. **Link against Nova Engine**
+   ```cmake
+   find_package(nova-engine REQUIRED)
+   target_link_libraries(${PROJECT_NAME} PRIVATE nova-engine::nova-engine)
+   # Note that any libraries that depend on ImGui must be built like (using imgui-knobs as an example):
+   #target_link_libraries(imgui-knobs PRIVATE nova-engine::nova-engine)
+   ```
 
 ### Example
 
@@ -86,28 +76,39 @@ Here's a simple example of how to create a window and run the engine:
 -# This example is a placeholder and does not reflect the actual project, please look at the examples.
 
 ```cpp
-#include "nova/engine.hpp"
+#include "engine.hpp"
 
-void render() {
- for(autoobject : Objects) {
-  draw(object);
- }
+#include <iostream>
+
+#include "imgui/imgui.h"
+// #include "imgui.h" if not building against engine source
+
+struct AppConfig {
+    float someValue = 42.0;
+};
+
+void gameLogic(const Nova::FrameCtx&, void* userData) {
+    AppConfig& cfg = *reinterpret_cast<AppConfig*>(userData);
+
+    ImGui::Begin("Demo Window");
+    ImGui::Text("Hello, Nova Engine with ImGui!");
+    ImGui::SliderFloat("Some Value", &cfg.someValue, 0.0f, 100.0f);
+    ImGui::End();
 }
 
-struct data {
- std::vector<object_t> Objects;
-}
-
-int main() {
-    NovaEngine::Engine engine;
-    Settings.width = 1920;
-    Settings.height = 1080;
-    Settings.title = "Nova Engine Demo";
-    engine.initialize();
-    engine.setRenderCallback(render);
+int main(void) {
+    Nova::EngineConfig config;
+    config.appMajorVer = 1;
+    config.appMinorVer = 1;
+    config.appPatchVer = 0;
+    config.title = "Nova Engine Demo Application";
+    AppConfig cfg;
+    config.userData = &cfg;
     
-    Objects.push_back(object_t::new_object());
-    engine.run();
+    Nova::Engine engine(config);
+
+    engine.loop(gameLogic);
+
     return 0;
 }
 ```
@@ -136,7 +137,7 @@ Usage of this software in any way subjects you to this license.
 
 ## Contact
 
-For any inquiries, please contact [NoahGrimes0915@gmail.com](mailto:NoahGrimes0915@gmail.com).
+For any inquiries, please contact [noahgrimes0915@gmail.com](mailto:noahgrimes0915@gmail.com).
 
 ---
 
