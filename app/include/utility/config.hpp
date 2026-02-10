@@ -25,6 +25,9 @@ public:
 
     void* userData;
 
+    // Enable VSync
+    bool enableVSync = true;
+
     /**
      * Engine Config
      */

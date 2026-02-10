@@ -23,6 +23,7 @@ Window::Window(const EngineConfig& c) {
         glfwTerminate();
         std::exit(EXIT_FAILURE);
     }
+    glfwSwapInterval(c.enableVSync);
 	glfwSetWindowUserPointer(window, this);
 	glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
     std::cout << 
