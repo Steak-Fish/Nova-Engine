@@ -392,34 +392,39 @@ bool Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
 }
 
 QueueFamilyIndices Device::findQueueFamilies(VkPhysicalDevice device) {
-  QueueFamilyIndices indices;
+    QueueFamilyIndices indices;
 
-  uint32_t queueFamilyCount = 0;
-  vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
 
-  std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-  vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
 
-  int i = 0;
-  for (const auto &queueFamily : queueFamilies) {
-    if (queueFamily.queueCount > 0 && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-      indices.graphicsFamily = i;
-      indices.graphicsFamilyHasValue = true;
+    int i = 0;
+    for (const auto &queueFamily : queueFamilies) {
+        if (queueFamily.queueCount > 0) {
+            if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+                indices.graphicsFamily = i;
+                indices.graphicsFamilyHasValue = true;
+            }
+            if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+                indices.computeFamily = i;
+                indices.computeFamilyHasValue = true;
+            }
+        }
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
+        if (presentSupport) {
+            indices.presentFamily = i;
+            indices.presentFamilyHasValue = true;
+        }
+
+        if (indices.isComplete()) break;
+        i++;
     }
-    VkBool32 presentSupport = false;
-    vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface_, &presentSupport);
-    if (queueFamily.queueCount > 0 && presentSupport) {
-      indices.presentFamily = i;
-      indices.presentFamilyHasValue = true;
-    }
-    if (indices.isComplete()) {
-      break;
-    }
 
-    i++;
-  }
-
-  return indices;
+    return indices;
 }
 
 SwapChainSupportDetails Device::querySwapChainSupport(VkPhysicalDevice device) {
