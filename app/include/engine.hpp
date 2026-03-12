@@ -1,27 +1,26 @@
 #pragma once
 
 #include "graphics/graphics.hpp"
+#include "objects/object.hpp"
+#include "systems/system_manager.hpp"
 
 #include <vector>
+#include <atomic>
 #include <memory>
-
-#include "objects/object.hpp"
 
 namespace Nova {
 
 class ModuleManager;
 
+/**
+ * @brief It's the engine, duh.
+ */
 class Engine {
 public:
     Engine(const EngineConfig& engineConfig);
     ~Engine();
 
     ObjectRef<Object> getRoot();
-
-    template<typename T>
-    void addSystem() {
-        graphics.addSystem<T>();
-    }
 
     using GameLogicFn = void(*)(const FrameCtx&, void* userData);
     void loop(GameLogicFn gameLogic);
@@ -30,9 +29,9 @@ public:
     Engine(const Engine&) = delete;
     Engine& operator=(const Engine&) = delete;
 
+    Graphics graphics; // MASSIVE change here ngl
 private:
     std::shared_ptr<Object> root;
-    Graphics graphics;
     ModuleManager* moduleManager;
     void* userData;
 };

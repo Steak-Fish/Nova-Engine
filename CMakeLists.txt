@@ -3,8 +3,8 @@ project(NovaEngineWorkspace)
 
 add_subdirectory(app)
 
-if(NOT SKIP_DEMO)
-    add_subdirectory(demo)
+if(NOT SKIP_EXAMPLES)
+    #add_subdirectory(examples)
 endif()
 
 if(NOT SKIP_MODULES)

@@ -41,6 +41,7 @@ target_compile_options(imgui PRIVATE -fPIC -Wall -Wextra)
 # -------------------------
 set(ENGINE_SOURCE_FILES
     engine/systems/system.cpp
+    engine/systems/system_manager.cpp
     engine/systems/gui_system.cpp
 
     engine/data/rollingbuffer.cpp
@@ -54,6 +55,7 @@ set(ENGINE_SOURCE_FILES
     engine/graphics/window.cpp
 
     engine/objects/object.cpp
+    engine/objects/camera.cpp
 
     engine/utility/config.cpp
 

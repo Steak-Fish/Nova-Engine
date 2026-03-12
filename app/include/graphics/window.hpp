@@ -2,8 +2,12 @@
 
 #include "utility/config.hpp"
 
-#define GLFW_INCLUDE_VULKAN
-#include "GLFW/glfw3.h"
+struct GLFWwindow;
+struct VkExtent2D;
+struct VkInstance_T;
+struct VkSurfaceKHR_T;
+typedef VkInstance_T *VkInstance;
+typedef VkSurfaceKHR_T *VkSurfaceKHR;
 
 namespace Nova {
 

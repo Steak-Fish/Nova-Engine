@@ -9,16 +9,21 @@
 
 #include "systems/gui_system.hpp"
 #include "modules/module_manager.hpp"
+#include "objects/camera.hpp"
 
 namespace Nova {
 
 Engine::Engine(const EngineConfig& c)
-    : root(std::make_shared<Object>()), graphics(c) {
+    : graphics(c), root(std::make_shared<Object>()) {
 
     moduleManager = new ModuleManager(const_cast<EngineConfig&>(c));
 
     std::cout << "Engine initalized!!!!" << std::endl;
     userData = c.userData;
+
+    std::shared_ptr<Camera> camera = std::make_shared<Camera>();
+    root->addChild(camera);
+    
 
 }
 

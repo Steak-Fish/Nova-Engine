@@ -6,7 +6,6 @@
 
 #include "objects/object.hpp"
 #include "utility/config.hpp"
-#include "systems/system.hpp"
 
 #define MAX_FRAME_TIME 1.0
 
@@ -23,31 +22,19 @@ struct FrameCtx {
 };
 
 class Graphics {
+friend class Engine;
 public:
     Graphics(const EngineConfig& engineConfig);
     ~Graphics();
 
     Graphics(const Graphics&) = delete;
     Graphics& operator=(const Graphics&) = delete;
-    
-    template<typename T>
-    void addSystem() {
-        static_assert(std::is_base_of<System, T>::value, "T must derive from System");
-        auto system = std::make_shared<T>(*window, *device, *renderer);
-        system->init();
-        systems.push_back(system);
-    }
 
     void waitDeviceIdle();
-
-    const FrameCtx* startFrame();
-    void endFrame();
 private:
     std::unique_ptr<Window> window;
     std::unique_ptr<Device> device;
     std::unique_ptr<Renderer> renderer;
-
-    std::vector<std::shared_ptr<System>> systems;
 
     /**
      * Should be good for around 4.06 trillion years at 144 FPS
@@ -57,6 +44,9 @@ private:
     uint64_t frameCount = 0;
 
     std::chrono::_V2::system_clock::time_point oldTime = std::chrono::high_resolution_clock::now();
+
+    const FrameCtx* startFrame();
+    void endFrame();
 };
 
 }

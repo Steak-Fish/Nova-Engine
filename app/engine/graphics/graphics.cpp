@@ -17,8 +17,6 @@ Graphics::Graphics(const EngineConfig& c) {
     window   = std::make_unique<Window>(c);
     device   = std::make_unique<Device>(*window, c);
     renderer = std::make_unique<Renderer>(*window, *device);
-
-    addSystem<GUI_System>();
 }
 
 Graphics::~Graphics() = default;

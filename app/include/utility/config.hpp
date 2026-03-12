@@ -42,6 +42,8 @@ public:
     bool     forceGPU = false;
     uint32_t forceGPUID;
 
+    bool disableDefaultCamera = false;
+
     const bool debug = true;
 
     const std::string& getExecPath() const;
