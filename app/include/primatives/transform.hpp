@@ -4,7 +4,7 @@
 
 namespace Nova {
 
-struct Transform {
+struct Transform2D {
     glm::vec2 pos;
 };
 

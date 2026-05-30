@@ -2,19 +2,17 @@
 
 #include <iostream>
 
-#include "systems/transformer.hpp"
-
 namespace Nova {
 
-Engine::Engine() {
-    systems.push_back(std::make_unique<Transformer>());
+Engine::Engine(EngineConfig config) {
+
 }
 
 void Engine::process(double dt) {
 
-    if(!root) return;
+    if(!scene) return;
 
-    for(auto& weak : root->getChildrenRecursive()) {
+    for(auto& weak : scene->getChildrenRecursive()) {
         std::shared_ptr<Object> obj = weak.lock();
         obj->process(dt);
 
@@ -31,13 +29,34 @@ void Engine::process(double dt) {
     }
 }
 
-void Engine::addChild(std::shared_ptr<Object> obj) {
-    if(!root) return;
-    root->addChild(obj);
+void Engine::setScene(std::shared_ptr<Scene> obj) {
+    // The original version of this function was:
+    // scene = obj;
+    // I miss those days.
+    // It's 5/23/26 at 8:54 PM and I'M TIRED GRAMPA
+    // I thought pointers were bad till I discovered safety
+    // Not trying to do TOO much lore drop, but there is another one I like...
+    // She's unique and I could almost see a reality...
+    // We don't talk though but that'll change real fast.
+    // But the other one is still there but I don't think it'll work
+    // I forgot I was writing this function hold on...
+
+
+    // TODO: Make sure that adoption and scene change
+    //       handles object registration correctly
+    scene = obj;
+
+
 }
 
-void Engine::setRoot(std::shared_ptr<Object> obj) {
-    root = obj;
+std::weak_ptr<Scene> Engine::getScene() {
+    return std::weak_ptr(scene);
+}
+
+void Engine::run() {
+    while(true) {
+        process(0);
+    }
 }
 
 }

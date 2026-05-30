@@ -78,6 +78,15 @@ std::vector<std::weak_ptr<Object>> Object::getChildrenRecursive() const {
     return refs;
 }
 
+
+void Object::setRegistered(bool v) {
+    registered = v;
+}
+
+bool Object::isRegistered() const {
+    return registered;
+}
+
 Object::~Object() {
     clearChildren();
 }

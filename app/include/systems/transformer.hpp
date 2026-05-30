@@ -1,5 +1,5 @@
 #pragma once
-
+/*
 #include "systems/system.hpp"
 #include "objects/transformable.hpp"
 
@@ -26,3 +26,4 @@ private:
 };
 
 }
+*/

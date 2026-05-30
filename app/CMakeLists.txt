@@ -35,10 +35,15 @@ target_compile_options(imgui PRIVATE -fPIC -Wall -Wextra)
 
 set(ENGINE_SOURCE_FILES
     engine/engine.cpp
+
+    engine/graphics/graphics.cpp
     
     engine/objects/object.cpp
+    engine/objects/scene.cpp
 
     engine/systems/system.cpp
+
+    engine/primatives/engine_config.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCE_FILES})

@@ -81,14 +81,8 @@ private:
 	std::weak_ptr<Object> parent;
 	ObjectList children;
     bool registered = false;
-
-    void setRegistered(bool v) {
-        registered = v;
-    }
-
-    bool isRegistered() const {
-        return registered;
-    }
+	void setRegistered(bool v);
+	bool isRegistered() const;
 };
 
 }

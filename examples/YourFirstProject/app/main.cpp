@@ -1,23 +1,22 @@
 #include <iostream>
 
 #include "engine.hpp"
-#include "objects/transformable.hpp"
 
 int main() {
-    Nova::Engine engine;
-    int i = 0;
+    Nova::EngineConfig c;
 
-    auto root = std::make_shared<Nova::Transformable>();
-    engine.setRoot(root);
+    c.title = "First Project | Nova Engine " + c.EngMajorVer + c.EngMajorVer + c.EngPatchVer;
+    c.appMajorVer = 1;
+    c.appMajorVer = 0;
+    c.appMajorVer = 0;
 
-    auto obj1 = std::make_shared<Nova::Transformable>();
-    auto obj2 = std::make_shared<Nova::Transformable>();
+    Nova::Engine engine{c};
 
-    std::cout << "Index: " << i++ << std::endl; engine.process(0);
-    engine.addChild(obj1);
-    std::cout << "Index: " << i++ << std::endl; engine.process(0);
-    engine.addChild(obj2);
-    std::cout << "Index: " << i++ << std::endl; engine.process(0);
+    auto scene = engine.getScene();
+
+    
+
+    engine.run();
 
     return 0;
 }
