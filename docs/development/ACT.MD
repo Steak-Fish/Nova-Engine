@@ -10,7 +10,7 @@ I'm assuming you have docker and ACT installed
 - ```bash
   export DEBIAN_FRONTEND=noninteractive
   apt update
-  apt install -y tzdata curl gnupg sudo
+  apt install -y tzdata curl gnupg sudo git
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
   apt install -y nodejs
   ```

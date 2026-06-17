@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace Nova {
 
 constexpr uint64_t fnv1a_64(const char* str) {
