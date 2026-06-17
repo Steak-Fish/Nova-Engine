@@ -77,10 +77,10 @@ target_include_directories(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
+        imgui
+    PRIVATE
         Vulkan::Vulkan
         glfw
-    PRIVATE
-        imgui
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
