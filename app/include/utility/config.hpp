@@ -42,16 +42,12 @@ public:
     bool     forceGPU = false;
     uint32_t forceGPUID;
 
-    const bool debug = true;
+    const bool debug = false;
 
     const std::string& getExecPath() const;
     std::vector<std::string> getModulePaths();
 
-#ifndef NDEBUG
-    bool enableValidationLayers = true;
-#else
     bool enableValidationLayers = false;
-#endif
 private:
     std::string executablePath;
 
